@@ -5,8 +5,10 @@ import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -19,15 +21,14 @@ class MainActivity : AppCompatActivity() {
         val textView2: TextView = findViewById(R.id.textView2)
 
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.randomNumber.collect {
-                    textView1.text = it.toString()
-                }
+            viewModel.randomNumber.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED).collect {
+                textView1.text = it.toString()
             }
         }
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
+                delay(10000)
                 viewModel.randomNumber.collect {
                     textView2.text = it.toString()
                 }
